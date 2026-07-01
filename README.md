@@ -250,6 +250,30 @@ If the node does not start, check these first:
 - Stale plugin jars were removed from `plugins/` after changing plugin configuration.
 - Secret-dependent sources stay disabled until their credentials are valid.
 
+If the console shows this command:
+
+```text
+java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar ${SERVER_JARFILE}
+```
+
+and then fails with:
+
+```text
+Error: -jar requires jar file specification
+```
+
+the server is not using the OskarLink startup command, or `SERVER_JARFILE` is empty. In Pterodactyl, set the server egg to `OskarLink`, reinstall the server, and make sure the startup command is:
+
+```text
+bash ./start-oskarlink.sh --server.port={{SERVER_PORT}} --lavalink.server.password={{LAVALINK_PASSWORD}}
+```
+
+If you must use a generic Java startup command, set:
+
+```text
+SERVER_JARFILE=OskarLink.jar
+```
+
 Useful commands:
 
 ```powershell

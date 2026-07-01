@@ -177,6 +177,7 @@ $variables = @(
   New-VariableDef "OskarLink Config URL" "Optional direct URL to application.yml. Overrides OSKARLINK_RAW_BASE_URL." "OSKARLINK_CONFIG_URL" "" $true "nullable|string|max:512"
   New-VariableDef "OskarLink Jar URL" "Optional direct custom jar URL. Leave empty to download Lavalink release." "OSKARLINK_JAR_URL" "" $true "nullable|string|max:512"
   New-VariableDef "Clean Plugin Jars" "Deletes stale plugin jars during install." "CLEAN_PLUGIN_JARS" "true" $true "required|string|in:true,false"
+  New-VariableDef "Server Jar File" "Compatibility variable for generic Java startup commands. OskarLink installs this file as OskarLink.jar." "SERVER_JARFILE" "OskarLink.jar" $true "required|string|max:64"
   New-VariableDef "OskarLink Profile" "Startup/calibration profile printed by the OskarLink launcher." "OSKARLINK_PROFILE" "balanced" $true "required|string|in:safe,balanced,throughput,low-latency"
   New-VariableDef "OskarLink Prestart Checks" "Runs English startup preflight checks before Lavalink starts." "OSKARLINK_PRESTART_CHECKS" "true" $true "required|string|in:true,false"
   New-VariableDef "Java Max RAM Percentage" "Value passed to -XX:MaxRAMPercentage." "OSKARLINK_JAVA_MAX_RAM" "95.0" $true "required|numeric|min:10|max:100"

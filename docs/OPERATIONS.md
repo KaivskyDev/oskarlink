@@ -17,6 +17,28 @@ Useful secondary signals:
 - a bot opens a websocket connection,
 - real `/v4/loadtracks` requests return tracks.
 
+## Pterodactyl Startup Command
+
+OskarLink servers should start with:
+
+```text
+bash ./start-oskarlink.sh --server.port={{SERVER_PORT}} --lavalink.server.password={{LAVALINK_PASSWORD}}
+```
+
+If the console instead shows:
+
+```text
+java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar ${SERVER_JARFILE}
+```
+
+and Java prints:
+
+```text
+Error: -jar requires jar file specification
+```
+
+then the server is still using a generic Java startup command or the `SERVER_JARFILE` variable is empty. Set the server egg to OskarLink, reinstall the server, and verify `SERVER_JARFILE=OskarLink.jar` if you keep the generic fallback startup.
+
 ## Smoke Test
 
 Run after deployment:

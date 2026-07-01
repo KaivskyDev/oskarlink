@@ -4,7 +4,7 @@
                  "version":  "PTDL_v2",
                  "update_url":  null
              },
-    "exported_at":  "2026-07-01T19:37:37+02:00",
+    "exported_at":  "2026-07-01T19:45:07+02:00",
     "name":  "OskarLink",
     "author":  "oskar.trzaskawka@oskarlink.dev",
     "description":  "OskarLink is a private Lavalink-compatible audio node distribution by Oskar Trzaskawka with a pinned, conflict-aware plugin stack and broad yt-dlp source coverage.",
@@ -82,6 +82,16 @@
                           "user_viewable":  true,
                           "user_editable":  true,
                           "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Server Jar File",
+                          "description":  "Compatibility variable for generic Java startup commands. OskarLink installs this file as OskarLink.jar.",
+                          "env_variable":  "SERVER_JARFILE",
+                          "default_value":  "OskarLink.jar",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|max:64",
                           "field_type":  "text"
                       },
                       {
