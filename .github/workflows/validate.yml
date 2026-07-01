@@ -1,0 +1,48 @@
+name: Validate OskarLink
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate YAML
+        shell: pwsh
+        run: |
+          @'
+          import pathlib
+          import yaml
+
+          files = [
+              pathlib.Path("config/application.example.yml"),
+              pathlib.Path("profiles/experimental-soundy.yml"),
+          ]
+
+          for file in files:
+              yaml.safe_load(file.read_text(encoding="utf-8"))
+              print(f"yaml ok: {file}")
+          '@ | python -
+
+      - name: Validate Pterodactyl Egg JSON
+        shell: pwsh
+        run: |
+          $egg = Get-Content -Raw .\pterodactyl\egg-oskarlink.json | ConvertFrom-Json
+          $egg.config.files | ConvertFrom-Json | Out-Null
+          $egg.config.startup | ConvertFrom-Json | Out-Null
+          $egg.config.logs | ConvertFrom-Json | Out-Null
+          "egg ok: $($egg.name), variables=$($egg.variables.Count)"
+
+      - name: Scan For Known Secret Patterns
+        shell: pwsh
+        run: .\scripts\scan-secrets.ps1
+
+      - name: Validate Download Artifacts
+        shell: pwsh
+        run: .\scripts\validate-artifacts.ps1

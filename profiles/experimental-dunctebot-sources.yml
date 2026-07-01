@@ -1,0 +1,23 @@
+# Experimental only. Previous Lavalink 4.2 runtime testing hit class-loading
+# errors with this plugin, so keep it on a separate node until startup is clean.
+lavalink:
+  plugins:
+    - dependency: "com.dunctebot:skybot-lavalink-plugin:1.7.1"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+
+plugins:
+  dunctebot:
+    ttsLanguage: "en-AU"
+    sources:
+      getyarn: true
+      clypit: true
+      tts: true
+      pornhub: false
+      reddit: true
+      ocremix: true
+      tiktok: false
+      mixcloud: true
+      soundgasm: true
+      pixeldrain: true
+      tumblr: false

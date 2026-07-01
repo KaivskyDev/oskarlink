@@ -1,0 +1,16 @@
+# Experimental only. Gaana has a reachable artifact and a dedicated prefix, but
+# it has low adoption and should be validated with real loadtracks calls first.
+lavalink:
+  plugins:
+    - dependency: "com.github.notdeltaxd:gaana-plugin:1.0.2"
+      repository: "https://jitpack.io"
+      snapshot: false
+
+plugins:
+  gaana:
+    searchLimit: 20
+
+logging:
+  level:
+    com.github.notdeltaxd.gaana: INFO
+    com.github.notdeltaxd.plugin: INFO

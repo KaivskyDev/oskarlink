@@ -1,0 +1,346 @@
+﻿# Sources
+
+Generated from yt-dlp supported sites on 2026-07-01 18:04:52 +02:00.
+
+yt-dlp extractor count: 1727
+
+## Native And Plugin Sources
+
+- YouTube
+- YouTube Music
+- SoundCloud
+- SoundCloud Go+
+- Bandcamp
+- Twitch
+- Vimeo
+- NicoNico
+- HTTP URLs
+- Flowery TTS
+- Spotify metadata/search
+- Apple Music metadata/search
+- Deezer direct playback when credentials are set
+- Yandex Music
+- VK Music
+- Tidal metadata/search
+- Qobuz
+- JioSaavn
+- Jellyfin via Jellylink
+- Bilibili via lavabili
+- Tracker modules via lava-xm
+- Lyrics via LavaLyrics
+- SponsorBlock chapters and segment skipping
+
+## Experimental Profile Sources
+
+These are not part of stable startup. Test one profile at a time.
+
+- PulseLink replacement profile: Spotify, Amazon Music, Apple Music, Tidal, Qobuz, Deezer, Yandex Music, VK Music, JioSaavn, Audiomack, Gaana, Shazam, Pandora, SoundCloud, yt-dlp, FloweryTTS, YouTube search, and lyrics paths.
+- DuncteBot profile: Mixcloud, OCR Remix, Clyp.it, Reddit, GetYarn, `speak:` TTS, TikTok, Soundgasm, Pixeldrain, and Tumblr.
+- Gaana profile: `gaanasearch:` plus Gaana songs, albums, playlists, and artist pages.
+
+## First 300 yt-dlp Extractors
+
+- 10play
+- 10play:season
+- 17live
+- 17live:clip
+- 17live:vod
+- 1News
+- 1tv
+- 1tv:live
+- 20min
+- 23video
+- 247sports
+- 24tv.ua
+- 3qsdn
+- 3sat
+- 4tube
+- 56.com
+- 7plus
+- 9c9media
+- 9gag
+- 9News
+- 9now.com.au
+- abc.net.au
+- abc.net.au:iview
+- abc.net.au:​iview:showseries
+- abcnews
+- abcnews:video
+- abcotvs
+- abcotvs:clips
+- AbemaTV
+- AbemaTVTitle
+- AcademicEarth:Course
+- acast
+- acast:channel
+- AcFunBangumi
+- AcFunVideo
+- ADN
+- ADNSeason
+- AdobeConnect
+- adobetv
+- AdultSwim
+- aenetworks
+- aenetworks:collection
+- aenetworks:show
+- AeonCo
+- agalega:videos
+- AitubeKZVideo
+- Alibaba
+- AliExpressLive
+- AlJazeera
+- Allocine
+- Allstar
+- AllstarProfile
+- AlphaPorno
+- altcensored
+- altcensored:channel
+- Alura
+- AluraCourse
+- AmadeusTV
+- Amara
+- AmazonMiniTV
+- amazonminitv:season
+- amazonminitv:series
+- AmazonReviews
+- AmazonStore
+- AMCNetworks
+- AmericasTestKitchen
+- AmericasTestKitchenSeason
+- AmHistoryChannel
+- anderetijden
+- Angel
+- AnimalPlanet
+- ant1newsgr:article
+- ant1newsgr:embed
+- antenna:watch
+- Anvato
+- aol.com
+- APA
+- Aparat
+- apple:​music:connect
+- ApplePodcasts
+- archive.org
+- ArcPublishing
+- ARD
+- ARDAudiothek
+- ARDAudiothekPlaylist
+- ARDMediathek
+- ARDMediathekCollection
+- Art19
+- Art19Show
+- arte.sky.it
+- ArteTV
+- ArteTVCategory
+- ArteTVEmbed
+- ArteTVPlaylist
+- asobichannel
+- asobichannel:tag
+- AsobiStage
+- AtresPlayer
+- AtScaleConfEvent
+- AudiMedia
+- AudioBoom
+- Audiodraft:custom
+- Audiodraft:generic
+- audiomack
+- audiomack:album
+- Audius
+- audius:artist
+- audius:playlist
+- audius:track
+- AZMedien
+- BaiduVideo
+- BanBye
+- BanByeChannel
+- Bandcamp
+- Bandcamp:album
+- Bandcamp:user
+- Bandcamp:weekly
+- Bandlab
+- BandlabPlaylist
+- BannedVideo
+- bbc
+- bbc.co.uk
+- bbc.co.uk:article
+- bbc.co.uk:​iplayer:episodes
+- bbc.co.uk:​iplayer:group
+- bbc.co.uk:playlist
+- BBVTV
+- BBVTVLive
+- BBVTVRecordings
+- BeaconTv
+- Beatport
+- Beeg
+- BehindKink
+- BerufeTV
+- Bet
+- bfi:player
+- bfmtv
+- bfmtv:article
+- bfmtv:live
+- bibeltv:live
+- bibeltv:series
+- bibeltv:video
+- Bigo
+- Bild
+- BiliBili
+- Bilibili category extractor
+- BilibiliAudio
+- BilibiliAudioAlbum
+- BiliBiliBangumi
+- BiliBiliBangumiMedia
+- BiliBiliBangumiSeason
+- BilibiliCheese
+- BilibiliCheeseSeason
+- BilibiliCollectionList
+- BiliBiliDynamic
+- BilibiliFavoritesList
+- BiliBiliPlayer
+- BilibiliPlaylist
+- BiliBiliSearch
+- BilibiliSeriesList
+- BilibiliSpaceAudio
+- BilibiliSpaceVideo
+- BilibiliWatchlater
+- BiliIntl
+- biliIntl:series
+- BiliLive
+- BioBioChileTV
+- Biography
+- BitChute
+- BitChuteChannel
+- Bitmovin
+- BlackboardCollaborate
+- BlackboardCollaborateLaunch
+- BleacherReport
+- BleacherReportCMS
+- blerp
+- blogger.com
+- Bloomberg
+- Bluesky
+- BongaCams
+- Boosty
+- BostonGlobe
+- Box
+- BoxCastVideo
+- Bpb
+- BR
+- BrainPOP
+- BrainPOPELL
+- BrainPOPEsp
+- BrainPOPFr
+- BrainPOPIl
+- BrainPOPJr
+- BravoTV
+- BreitBart
+- brightcove:legacy
+- brightcove:new
+- Brilliantpala:Classes
+- Brilliantpala:Elearn
+- bt:article
+- bt:vestlendingen
+- BTVPlus
+- Bundesliga
+- Bundestag
+- BunnyCdn
+- BusinessInsider
+- BuzzFeed
+- BYUtv
+- Caltrans
+- CAM4
+- CamFMEpisode
+- CamFMShow
+- CamModels
+- Camsoda
+- CamtasiaEmbed
+- Canal1
+- CanalAlpha
+- canalc2.tv
+- Canalplus
+- Canalsurmas
+- CaracolTvPlay
+- cbc.ca
+- cbc.ca:listen
+- cbc.ca:player
+- cbc.ca:​player:playlist
+- CBS
+- CBSLocal
+- CBSLocalArticle
+- CBSLocalLive
+- cbsnews
+- cbsnews:embed
+- cbsnews:live
+- cbsnews:livevideo
+- cbssports
+- cbssports:embed
+- CCMA
+- CCTV
+- CDA
+- CDAFolder
+- Cellebrite
+- CeskaTelevize
+- CGTN
+- CharlieRose
+- Chaturbate
+- Chilloutzone
+- chzzk:live
+- chzzk:video
+- cielotv.it
+- Cinemax
+- CinetecaMilano
+- Cineverse
+- CineverseDetails
+- CiscoLiveSearch
+- CiscoLiveSession
+- ciscowebex
+- CJSW
+- Clipchamp
+- ClipRs
+- CloserToTruth
+- CloudflareStream
+- CloudyCDN
+- Clubic
+- Clyp
+- CNBCVideo
+- CNN
+- CNNIndonesia
+- ComedyCentral
+- ConanClassic
+- CondeNast
+- CookingChannel
+- Corus
+- Coub
+- CozyTV
+- cp24
+- cpac
+- cpac:playlist
+- Cracked
+- Craftsy
+- croatian.film
+- CrooksAndLiars
+- CrowdBunker
+- CrowdBunkerChannel
+- Crtvg
+- CSpan
+- CSpanCongress
+- CtsNews
+- CTVNews
+- cu.ntv.co.jp
+- CultureUnplugged
+- curiositystream
+- curiositystream:collections
+- curiositystream:series
+- Cybrary
+- CybraryCourse
+- DacastPlaylist
+- DacastVOD
+- DagelijkseKost
+- DailyMail
+- dailymotion
+- dailymotion:playlist
+- dailymotion:search
+
+The full current list is maintained by yt-dlp:
+
+https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md

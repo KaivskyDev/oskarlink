@@ -1,0 +1,15 @@
+application.yml
+application.local.yml
+*.local.yml
+.env
+*.env
+logs/
+plugins/
+bin/
+tmp/
+OskarLink.jar
+Lavalink.jar
+*.jar
+*.log
+*.pid
+

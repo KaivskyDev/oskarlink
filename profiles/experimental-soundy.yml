@@ -1,0 +1,11 @@
+# Experimental only. Do not paste into stable until the jar is published and tested.
+lavalink:
+  plugins:
+    - dependency: "com.waris4ly.soundy:plugin:1.0.0"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+
+plugins:
+  soundy:
+    enabled: true
+

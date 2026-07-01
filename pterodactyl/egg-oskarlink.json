@@ -1,0 +1,518 @@
+﻿{
+    "_comment":  "Custom Pterodactyl egg for OskarLink. Generated from upload-to-github/OskarLink.",
+    "meta":  {
+                 "version":  "PTDL_v2",
+                 "update_url":  null
+             },
+    "exported_at":  "2026-07-01T18:36:03+02:00",
+    "name":  "OskarLink",
+    "author":  "Oskar Trzaskawka",
+    "description":  "OskarLink is a private Lavalink-compatible audio node distribution by Oskar Trzaskawka with a pinned, conflict-aware plugin stack and broad yt-dlp source coverage.",
+    "features":  [
+
+                 ],
+    "docker_images":  {
+                          "ghcr.io/parkervcp/yolks:java_21":  "ghcr.io/parkervcp/yolks:java_21",
+                          "ghcr.io/parkervcp/yolks:java_17":  "ghcr.io/parkervcp/yolks:java_17",
+                          "ghcr.io/parkervcp/yolks:java_25":  "ghcr.io/parkervcp/yolks:java_25"
+                      },
+    "file_denylist":  [
+
+                      ],
+    "startup":  "java -XX:MaxRAMPercentage=95.0 -XX:InitialRAMPercentage=25.0 -jar OskarLink.jar --server.port={{SERVER_PORT}} --lavalink.server.password={{LAVALINK_PASSWORD}}",
+    "config":  {
+                   "files":  "{\n  \"application.yml\": {\n    \"parser\": \"yml\"\n  }\n}",
+                   "startup":  "{\n  \"done\": \"Lavalink is ready to accept connections.\"\n}",
+                   "logs":  "{\n  \"location\": \"logs/\"\n}",
+                   "stop":  "^^C"
+               },
+    "scripts":  {
+                    "installation":  {
+                                         "script":  "#!/bin/bash\nset -euo pipefail\n\nprintf \u0027%s\\n\u0027 \u0027[OskarLink] Installing packages\u0027\napt-get update -qq \u003e/dev/null\napt-get install -y -qq curl ca-certificates \u003e/dev/null\n\ncd /mnt/server\nmkdir -p plugins logs bin\n\nif [ \"${CLEAN_PLUGIN_JARS:-true}\" = \u0027true\u0027 ]; then\n  printf \u0027%s\\n\u0027 \u0027[OskarLink] Cleaning stale plugin jars\u0027\n  find ./plugins -maxdepth 1 -type f -name \u0027*.jar\u0027 -delete\nfi\n\nversion=\"${LAVALINK_VERSION:-4.2.2}\"\nif [ -n \"${OSKARLINK_JAR_URL:-}\" ]; then\n  lavalink_url=\"${OSKARLINK_JAR_URL}\"\nelif [ \"$version\" = \u0027latest\u0027 ]; then\n  lavalink_url=\u0027https://github.com/lavalink-devs/Lavalink/releases/latest/download/Lavalink.jar\u0027\nelse\n  lavalink_url=\"https://github.com/lavalink-devs/Lavalink/releases/download/${version}/Lavalink.jar\"\nfi\n\nprintf \u0027%s\\n\u0027 \"[OskarLink] Downloading Lavalink core (${version})\"\ncurl -fL --retry 5 --retry-delay 2 \"$lavalink_url\" -o OskarLink.jar\n\narch=\"$(uname -m)\"\ncase \"$arch\" in\n  x86_64|amd64) ytdlp_asset=\u0027yt-dlp_linux\u0027 ;;\n  aarch64|arm64) ytdlp_asset=\u0027yt-dlp_linux_aarch64\u0027 ;;\n  *) ytdlp_asset=\u0027yt-dlp\u0027 ;;\nesac\n\nprintf \u0027%s\\n\u0027 \u0027[OskarLink] Installing yt-dlp helper\u0027\ncurl -fL --retry 5 --retry-delay 2 \"https://github.com/yt-dlp/yt-dlp/releases/latest/download/${ytdlp_asset}\" -o ./bin/yt-dlp\nchmod +x ./bin/yt-dlp\n\nif [ ! -f application.yml ]; then\n  if [ -n \"${OSKARLINK_CONFIG_URL:-}\" ]; then\n    printf \u0027%s\\n\u0027 \u0027[OskarLink] Downloading application.yml from OSKARLINK_CONFIG_URL\u0027\n    curl -fL --retry 5 --retry-delay 2 \"${OSKARLINK_CONFIG_URL}\" -o application.yml\n  elif [ -n \"${OSKARLINK_RAW_BASE_URL:-}\" ]; then\n    printf \u0027%s\\n\u0027 \u0027[OskarLink] Downloading application.yml from OSKARLINK_RAW_BASE_URL\u0027\n    curl -fL --retry 5 --retry-delay 2 \"${OSKARLINK_RAW_BASE_URL%/}/config/application.example.yml\" -o application.yml\n  else\n    printf \u0027%s\\n\u0027 \u0027[OskarLink] Writing embedded application.yml\u0027\n    cat \u003e application.yml \u003c\u003c\u0027YAML\u0027\nserver:\n  port: 2333\n  address: 0.0.0.0\n  http2:\n    enabled: false\n  compression:\n    enabled: true\n    mime-types: application/json,text/plain\n  tomcat:\n    connection-timeout: 30s\n    accept-count: 200\n    threads:\n      min-spare: 16\n      max: 256\n\nspring:\n  main:\n    banner-mode: \"off\"\n  lifecycle:\n    timeout-per-shutdown-phase: 30s\n  mvc:\n    async:\n      request-timeout: 45s\n  codec:\n    max-in-memory-size: 16MB\n\nmanagement:\n  endpoints:\n    web:\n      exposure:\n        include: health,info,metrics,prometheus\n  endpoint:\n    health:\n      probes:\n        enabled: true\n      show-details: never\n  metrics:\n    tags:\n      application: oskarlink\n\nlavalink:\n  plugins:\n    - dependency: \"dev.lavalink.youtube:youtube-plugin:1.18.1\"\n      repository: \"https://maven.lavalink.dev/releases\"\n      snapshot: false\n    - dependency: \"com.github.topi314.lavasrc:lavasrc-plugin:4.8.3\"\n      repository: \"https://maven.lavalink.dev/releases\"\n      snapshot: false\n    - dependency: \"io.github.lavalink-addons:lavasrc-failover-plugin:1.1.3\"\n      repository: \"https://repo1.maven.org/maven2\"\n      snapshot: false\n    - dependency: \"com.github.topi314.lavasearch:lavasearch-plugin:1.0.0\"\n      repository: \"https://maven.lavalink.dev/releases\"\n      snapshot: false\n    - dependency: \"com.github.topi314.lavalyrics:lavalyrics-plugin:1.1.0\"\n      repository: \"https://maven.lavalink.dev/releases\"\n      snapshot: false\n    - dependency: \"com.github.topi314.sponsorblock:sponsorblock-plugin:3.0.1\"\n      repository: \"https://maven.lavalink.dev/releases\"\n      snapshot: false\n    - dependency: \"com.github.Devoxin:LavaDSPX-Plugin:0.0.5\"\n      repository: \"https://jitpack.io\"\n      snapshot: false\n    - dependency: \"com.github.Myxelium:Jellylink:v0.2.1\"\n      repository: \"https://jitpack.io\"\n      snapshot: false\n    - dependency: \"com.github.dubistmutig:discovery-go:0.1.0\"\n      repository: \"https://jitpack.io\"\n      snapshot: false\n    - dependency: \"com.github.ParrotXray:lavabili-plugin:1.3.1\"\n      repository: \"https://jitpack.io\"\n      snapshot: false\n    - dependency: \"net.esmbot:lava-xm-plugin:0.2.8\"\n      repository: \"https://repo.projectlounge.pw/maven/releases\"\n      snapshot: false\n  pluginsDir: \"./plugins\"\n  defaultPluginRepository: \"https://maven.lavalink.dev/releases\"\n  defaultPluginSnapshotRepository: \"https://maven.lavalink.dev/snapshots\"\n  server:\n    password: \"${LAVALINK_PASSWORD:youshallnotpass}\"\n    sources:\n      youtube: false\n      bandcamp: true\n      soundcloud: true\n      twitch: true\n      vimeo: true\n      nico: true\n      http: ${ENABLE_HTTP_SOURCE:true}\n      local: ${ENABLE_LOCAL_SOURCE:false}\n    filters:\n      volume: true\n      equalizer: true\n      karaoke: true\n      timescale: true\n      tremolo: true\n      vibrato: true\n      distortion: true\n      rotation: true\n      channelMix: true\n      lowPass: true\n    nonAllocatingFrameBuffer: true\n    bufferDurationMs: 2000\n    frameBufferDurationMs: 12000\n    opusEncodingQuality: 10\n    resamplingQuality: HIGH\n    trackStuckThresholdMs: 30000\n    useSeekGhosting: true\n    youtubePlaylistLoadLimit: 12\n    playerUpdateInterval: 5\n    youtubeSearchEnabled: true\n    soundcloudSearchEnabled: true\n    soundcloudFilterOutPreviewTracks: true\n    gc-warnings: true\n    ratelimit:\n      ipBlocks: []\n      excludedIps: []\n      strategy: \"RotateOnBan\"\n      searchTriggersFail: true\n      retryLimit: 5\n    timeouts:\n      connectTimeoutMs: 10000\n      connectionRequestTimeoutMs: 10000\n      socketTimeoutMs: 10000\n\nplugins:\n  youtube:\n    enabled: true\n    allowSearch: true\n    allowDirectVideoIds: true\n    allowDirectPlaylistIds: true\n    clients:\n      - TV\n      - TVHTML5_SIMPLY\n      - ANDROID_VR\n      - ANDROID_MUSIC\n      - IOS\n      - WEB\n      - MWEB\n      - WEBEMBEDDED\n      - MUSIC\n    clientOptions:\n      TV:\n        playback: true\n        playlistLoading: false\n        searching: false\n        videoLoading: true\n      TVHTML5_SIMPLY:\n        playback: true\n        playlistLoading: false\n        searching: false\n        videoLoading: true\n      ANDROID_VR:\n        playback: true\n        playlistLoading: true\n        searching: true\n        videoLoading: true\n      ANDROID_MUSIC:\n        playback: true\n        playlistLoading: true\n        searching: true\n        videoLoading: true\n      IOS:\n        playback: true\n        playlistLoading: true\n        searching: true\n        videoLoading: true\n      WEB:\n        playback: false\n        playlistLoading: true\n        searching: true\n        videoLoading: true\n      MWEB:\n        playback: false\n        playlistLoading: true\n        searching: true\n        videoLoading: true\n      WEBEMBEDDED:\n        playback: true\n        playlistLoading: false\n        searching: false\n        videoLoading: true\n      MUSIC:\n        playback: false\n        playlistLoading: false\n        searching: true\n        videoLoading: false\n    oauth:\n      enabled: ${YOUTUBE_OAUTH_ENABLED:false}\n      refreshToken: \"${YOUTUBE_OAUTH_REFRESH_TOKEN:}\"\n      skipInitialization: true\n    pot:\n      token: \"${YOUTUBE_POT_TOKEN:}\"\n      visitorData: \"${YOUTUBE_VISITOR_DATA:}\"\n    # Enable only when you run a trusted yt-cipher server.\n    # remoteCipher:\n    #   url: \"${YOUTUBE_REMOTE_CIPHER_URL:}\"\n    #   password: \"${YOUTUBE_REMOTE_CIPHER_PASSWORD:}\"\n    #   userAgent: \"OskarLink\"\n\n  lavasrc:\n    providers:\n      - \"qbisrc:%ISRC%\"\n      - \"ytsearch:\\\"%ISRC%\\\"\"\n      - \"ytmsearch:\\\"%ISRC%\\\"\"\n      - \"qbsearch:%QUERY%\"\n      - \"tdsearch:%QUERY%\"\n      - \"amsearch:%QUERY%\"\n      - \"spsearch:%QUERY%\"\n      - \"ymsearch:%QUERY%\"\n      - \"vksearch:%QUERY%\"\n      - \"ytsearch:%QUERY%\"\n      - \"ytmsearch:%QUERY%\"\n      - \"scsearch:%QUERY%\"\n    sources:\n      spotify: ${ENABLE_SPOTIFY:false}\n      applemusic: ${ENABLE_APPLE_MUSIC:false}\n      deezer: ${ENABLE_DEEZER:false}\n      yandexmusic: ${ENABLE_YANDEX_MUSIC:false}\n      vkmusic: ${ENABLE_VK_MUSIC:false}\n      tidal: ${ENABLE_TIDAL:false}\n      qobuz: ${ENABLE_QOBUZ:false}\n      ytdlp: true\n      flowerytts: ${ENABLE_FLOWERY_TTS:true}\n      youtube: true\n      jiosaavn: ${ENABLE_JIOSAAVN:false}\n    lyrics-sources:\n      spotify: ${ENABLE_SPOTIFY:false}\n      deezer: ${ENABLE_DEEZER:false}\n      youtube: true\n      yandexmusic: ${ENABLE_YANDEX_MUSIC:false}\n      vkmusic: ${ENABLE_VK_MUSIC:false}\n      lrcLib: true\n    spotify:\n      clientId: \"${SPOTIFY_CLIENT_ID:}\"\n      clientSecret: \"${SPOTIFY_CLIENT_SECRET:}\"\n      spDc: \"${SPOTIFY_SP_DC:}\"\n      countryCode: \"${MUSIC_COUNTRY:US}\"\n      playlistLoadLimit: 10\n      albumLoadLimit: 10\n      resolveArtistsInSearch: false\n      localFiles: false\n      preferPartnerApi: false\n      preferV1SearchApi: false\n      customTokenEndpoint: \"${SPOTIFY_CUSTOM_TOKEN_ENDPOINT:}\"\n    applemusic:\n      countryCode: \"${MUSIC_COUNTRY:US}\"\n      mediaAPIToken: \"${APPLE_MUSIC_TOKEN:}\"\n      playlistLoadLimit: 10\n      albumLoadLimit: 10\n    deezer:\n      masterDecryptionKey: \"${DEEZER_MASTER_KEY:}\"\n      arl: \"${DEEZER_ARL:}\"\n      formats: [ \"FLAC\", \"MP3_320\", \"MP3_256\", \"MP3_128\", \"MP3_64\", \"AAC_64\" ]\n    yandexmusic:\n      accessToken: \"${YANDEX_ACCESS_TOKEN:}\"\n      playlistLoadLimit: 15\n      albumLoadLimit: 15\n      artistLoadLimit: 15\n    vkmusic:\n      userToken: \"${VK_USER_TOKEN:}\"\n      playlistLoadLimit: 10\n      artistLoadLimit: 10\n      recommendationsLoadLimit: 50\n    tidal:\n      countryCode: \"${MUSIC_COUNTRY:US}\"\n      searchLimit: 6\n      token: \"${TIDAL_TOKEN:}\"\n    qobuz:\n      userOauthToken: \"${QOBUZ_USER_OAUTH_TOKEN:}\"\n    jiosaavn:\n      decryption:\n        secretKey: \"${JIOSAAVN_SECRET:}\"\n    ytdlp:\n      path: \"./bin/yt-dlp\"\n      searchLimit: 15\n      mixPlaylistLoadLimit: 25\n      playlistLoadLimit: 1000\n      customLoadArgs:\n        - \"-q\"\n        - \"--no-warnings\"\n        - \"--flat-playlist\"\n        - \"--skip-download\"\n        - \"-J\"\n      customPlaybackArgs:\n        - \"-q\"\n        - \"--no-warnings\"\n        - \"-f\"\n        - \"bestaudio\"\n        - \"-J\"\n    flowerytts:\n      voice: \"default voice\"\n      translate: false\n      silence: 0\n      speed: 1.0\n      audioFormat: \"mp3\"\n    youtube:\n      countryCode: \"${MUSIC_COUNTRY:US}\"\n      language: \"en\"\n\n  lavalyrics:\n    sources:\n      - youtube\n      - lrcLib\n      - spotify\n      - deezer\n      - yandexMusic\n      - vkMusic\n\n  sponsorblock:\n    enabled: true\n\n  failover:\n    enabled: true\n    logLevel: INFO\n    failureThreshold: 3\n    endpointEnabled: true\n    endpointPath: /v4/failover/health\n\n  jellylink:\n    enabled: ${ENABLE_JELLYLINK:false}\n    server: \"${JELLYFIN_SERVER:}\"\n    username: \"${JELLYFIN_USERNAME:}\"\n    password: \"${JELLYFIN_PASSWORD:}\"\n    searchPrefix: \"jfsearch\"\n\n  discovery-go:\n    enabled: ${ENABLE_DISCOVERY_GO:false}\n    soundcloudOAuthToken: \"${SOUNDCLOUD_OAUTH_TOKEN:}\"\n\n  lavabili:\n    enabled: ${ENABLE_LAVABILI:true}\n    allowSearch: true\n    playlistPageCount: -1\n    auth:\n      enabled: ${BILIBILI_AUTH_ENABLED:false}\n      sessdata: \"${BILIBILI_SESSDATA:}\"\n      biliJct: \"${BILIBILI_BILI_JCT:}\"\n      buvid3: \"${BILIBILI_BUVID3:}\"\n\nmetrics:\n  prometheus:\n    enabled: ${ENABLE_PROMETHEUS:true}\n    endpoint: /metrics\n\nsentry:\n  dsn: \"${SENTRY_DSN:}\"\n  environment: \"${SENTRY_ENVIRONMENT:production}\"\n\nlogging:\n  file:\n    path: ./logs/\n    max-history: 14\n    max-size: 100MB\n  level:\n    root: INFO\n    lavalink: INFO\n    lavalink.server.io.SocketContext: OFF\n    com.sedmelluq.discord.lavaplayer.tools.ExceptionTools: OFF\n    com.sedmelluq.discord.lavaplayer.tools.io.PersistentHttpStream: OFF\n    com.sedmelluq.discord.lavaplayer.source.youtube.YoutubePersistentHttpStream: OFF\n    dev.lavalink.youtube.YoutubeAudioSourceManager: INFO\n    dev.lavalink.youtube.http.YoutubeOauth2Handler: INFO\n    com.github.topi314.lavasrc: INFO\n    com.github.topi314.lavasearch: INFO\n    com.github.topi314.lavalyrics: INFO\n    com.github.topi314.sponsorblock: INFO\n    io.github.lavalinkaddons: INFO\n    dev.lavalink.failover: INFO\n    me.devoxin: INFO\n  request:\n    enabled: true\n    includeClientInfo: true\n    includeHeaders: false\n    includeQueryString: true\n    includePayload: false\n    maxPayloadLength: 10000\n    beforeRequest: false\n  logback:\n    rollingpolicy:\n      max-file-size: 100MB\n      max-history: 14\nYAML\n  fi\nelse\n  printf \u0027%s\\n\u0027 \u0027[OskarLink] Keeping existing application.yml\u0027\nfi\n\nprintf \u0027%s\\n\u0027 \u0027[OskarLink] Installation completed\u0027",
+                                         "container":  "ghcr.io/parkervcp/installers:debian",
+                                         "entrypoint":  "bash"
+                                     }
+                },
+    "variables":  [
+                      {
+                          "name":  "Lavalink Version",
+                          "description":  "Pinned Lavalink release tag. Use latest only after testing plugin compatibility.",
+                          "env_variable":  "LAVALINK_VERSION",
+                          "default_value":  "4.2.2",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|max:32",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "OskarLink Raw Base URL",
+                          "description":  "Optional raw GitHub base URL, for example https://raw.githubusercontent.com/user/OskarLink/main.",
+                          "env_variable":  "OSKARLINK_RAW_BASE_URL",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:512",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "OskarLink Config URL",
+                          "description":  "Optional direct URL to application.yml. Overrides OSKARLINK_RAW_BASE_URL.",
+                          "env_variable":  "OSKARLINK_CONFIG_URL",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:512",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "OskarLink Jar URL",
+                          "description":  "Optional direct custom jar URL. Leave empty to download Lavalink release.",
+                          "env_variable":  "OSKARLINK_JAR_URL",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:512",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Clean Plugin Jars",
+                          "description":  "Deletes stale plugin jars during install.",
+                          "env_variable":  "CLEAN_PLUGIN_JARS",
+                          "default_value":  "true",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Lavalink Password",
+                          "description":  "Authorization password used by your bot client.",
+                          "env_variable":  "LAVALINK_PASSWORD",
+                          "default_value":  "youshallnotpass",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "required|string|max:256",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Music Country",
+                          "description":  "Country code used by source APIs.",
+                          "env_variable":  "MUSIC_COUNTRY",
+                          "default_value":  "US",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|size:2",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable HTTP Source",
+                          "description":  "Allows direct HTTP audio URLs.",
+                          "env_variable":  "ENABLE_HTTP_SOURCE",
+                          "default_value":  "true",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Local Source",
+                          "description":  "Allows local file playback.",
+                          "env_variable":  "ENABLE_LOCAL_SOURCE",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Spotify",
+                          "description":  "Enables Spotify through LavaSrc.",
+                          "env_variable":  "ENABLE_SPOTIFY",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Spotify Client ID",
+                          "description":  "Spotify client ID.",
+                          "env_variable":  "SPOTIFY_CLIENT_ID",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Spotify Client Secret",
+                          "description":  "Spotify client secret.",
+                          "env_variable":  "SPOTIFY_CLIENT_SECRET",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Spotify sp_dc",
+                          "description":  "Spotify sp_dc cookie. Use a separate account.",
+                          "env_variable":  "SPOTIFY_SP_DC",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Spotify Custom Token Endpoint",
+                          "description":  "Optional Spotify anonymous token endpoint.",
+                          "env_variable":  "SPOTIFY_CUSTOM_TOKEN_ENDPOINT",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Apple Music",
+                          "description":  "Enables Apple Music through LavaSrc.",
+                          "env_variable":  "ENABLE_APPLE_MUSIC",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Apple Music Token",
+                          "description":  "Apple Music media API token.",
+                          "env_variable":  "APPLE_MUSIC_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:8192",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable Deezer",
+                          "description":  "Enables Deezer. Requires master key and ARL.",
+                          "env_variable":  "ENABLE_DEEZER",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Deezer Master Key",
+                          "description":  "Deezer master decryption key.",
+                          "env_variable":  "DEEZER_MASTER_KEY",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Deezer ARL",
+                          "description":  "Deezer ARL cookie.",
+                          "env_variable":  "DEEZER_ARL",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable Yandex Music",
+                          "description":  "Enables Yandex Music.",
+                          "env_variable":  "ENABLE_YANDEX_MUSIC",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Yandex Access Token",
+                          "description":  "Yandex Music access token.",
+                          "env_variable":  "YANDEX_ACCESS_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable VK Music",
+                          "description":  "Enables VK Music.",
+                          "env_variable":  "ENABLE_VK_MUSIC",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "VK User Token",
+                          "description":  "VK user token. Use a separate account.",
+                          "env_variable":  "VK_USER_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:8192",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable Tidal",
+                          "description":  "Enables Tidal through LavaSrc.",
+                          "env_variable":  "ENABLE_TIDAL",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Tidal Token",
+                          "description":  "Tidal token.",
+                          "env_variable":  "TIDAL_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable Qobuz",
+                          "description":  "Enables Qobuz.",
+                          "env_variable":  "ENABLE_QOBUZ",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Qobuz OAuth Token",
+                          "description":  "Qobuz x-user-auth-token.",
+                          "env_variable":  "QOBUZ_USER_OAUTH_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable JioSaavn",
+                          "description":  "Enables JioSaavn. Requires secret.",
+                          "env_variable":  "ENABLE_JIOSAAVN",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "JioSaavn Secret",
+                          "description":  "JioSaavn decryption secret.",
+                          "env_variable":  "JIOSAAVN_SECRET",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Flowery TTS",
+                          "description":  "Enables Flowery TTS.",
+                          "env_variable":  "ENABLE_FLOWERY_TTS",
+                          "default_value":  "true",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "YouTube OAuth Enabled",
+                          "description":  "Enables youtube-source OAuth.",
+                          "env_variable":  "YOUTUBE_OAUTH_ENABLED",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "YouTube OAuth Refresh Token",
+                          "description":  "youtube-source refresh token.",
+                          "env_variable":  "YOUTUBE_OAUTH_REFRESH_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "YouTube PoToken",
+                          "description":  "Optional YouTube poToken.",
+                          "env_variable":  "YOUTUBE_POT_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "YouTube Visitor Data",
+                          "description":  "Required when using poToken.",
+                          "env_variable":  "YOUTUBE_VISITOR_DATA",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable Jellylink",
+                          "description":  "Enables Jellyfin source through Jellylink.",
+                          "env_variable":  "ENABLE_JELLYLINK",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Jellyfin Server",
+                          "description":  "Jellyfin server URL.",
+                          "env_variable":  "JELLYFIN_SERVER",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Jellyfin Username",
+                          "description":  "Jellyfin username.",
+                          "env_variable":  "JELLYFIN_USERNAME",
+                          "default_value":  "",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Jellyfin Password",
+                          "description":  "Jellyfin password.",
+                          "env_variable":  "JELLYFIN_PASSWORD",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Discovery Go",
+                          "description":  "Enables SoundCloud Go+ support.",
+                          "env_variable":  "ENABLE_DISCOVERY_GO",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "SoundCloud OAuth Token",
+                          "description":  "SoundCloud OAuth token for discovery-go.",
+                          "env_variable":  "SOUNDCLOUD_OAUTH_TOKEN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Enable Lavabili",
+                          "description":  "Enables Bilibili support.",
+                          "env_variable":  "ENABLE_LAVABILI",
+                          "default_value":  "true",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Bilibili Auth",
+                          "description":  "Enables authenticated Bilibili mode.",
+                          "env_variable":  "BILIBILI_AUTH_ENABLED",
+                          "default_value":  "false",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Bilibili SESSDATA",
+                          "description":  "Bilibili SESSDATA cookie.",
+                          "env_variable":  "BILIBILI_SESSDATA",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "textarea"
+                      },
+                      {
+                          "name":  "Bilibili bili_jct",
+                          "description":  "Bilibili bili_jct cookie.",
+                          "env_variable":  "BILIBILI_BILI_JCT",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Bilibili buvid3",
+                          "description":  "Bilibili buvid3 cookie.",
+                          "env_variable":  "BILIBILI_BUVID3",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Enable Prometheus",
+                          "description":  "Enables Prometheus metrics endpoint.",
+                          "env_variable":  "ENABLE_PROMETHEUS",
+                          "default_value":  "true",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "required|string|in:true,false",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Sentry DSN",
+                          "description":  "Optional Sentry DSN.",
+                          "env_variable":  "SENTRY_DSN",
+                          "default_value":  "",
+                          "user_viewable":  false,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      },
+                      {
+                          "name":  "Sentry Environment",
+                          "description":  "Sentry environment label.",
+                          "env_variable":  "SENTRY_ENVIRONMENT",
+                          "default_value":  "production",
+                          "user_viewable":  true,
+                          "user_editable":  true,
+                          "rules":  "nullable|string|max:4096",
+                          "field_type":  "text"
+                      }
+                  ]
+}

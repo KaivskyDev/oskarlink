@@ -1,0 +1,22 @@
+# Run these only against the matching experimental profile.
+#
+# PulseLink replace-LavaSrc profile:
+amzsearch:alan walker
+amsearch:alan walker
+spsearch:alan walker
+tdsearch:alan walker
+qbsearch:alan walker
+jssearch:alan walker
+admsearch:alan walker
+gnsearch:alan walker
+szsearch:alan walker
+pdsearch:alan walker
+ftts:hello from oskarlink
+#
+# Gaana standalone profile:
+gaanasearch:arijit singh
+https://gaana.com/song/apna-bana-le-piya
+#
+# DuncteBot standalone profile:
+speak:hello from oskarlink
+https://pixeldrain.com/u/example
