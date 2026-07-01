@@ -38,8 +38,8 @@ JioSaavn, Gaana, Audiomack, Bandcamp, SoundCloud, or yt-dlp. Do not treat mirror
 metadata as proof that the original platform is being streamed directly.
 
 If two plugins claim the same search prefix, keep only one enabled in a node.
-For example, PulseLink should be tested as a LavaSrc replacement profile, not as
-an extra plugin stacked on top of the stable LavaSrc configuration.
+PulseLink is rejected for this distribution because it does not work with the
+current lavaclient integration and overlaps LavaSrc source ownership.
 
 ## Amazon Music
 

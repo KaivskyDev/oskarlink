@@ -1,0 +1,40 @@
+# OskarSource Stack overlay for lavaclient.
+# Copy this root-level plugins.lavasrc block into config/application.example.yml,
+# or generate config/application.lavaclient-max.yml with scripts/new-lavaclient-max-config.ps1.
+plugins:
+  lavasrc:
+    providers:
+      - "dzisrc:%ISRC%"
+      - "qbisrc:%ISRC%"
+      - "ytsearch:\"%ISRC%\""
+      - "ytmsearch:\"%ISRC%\""
+      - "dzsearch:%QUERY%"
+      - "qbsearch:%QUERY%"
+      - "tdsearch:%QUERY%"
+      - "amsearch:%QUERY%"
+      - "spsearch:%QUERY%"
+      - "ymsearch:%QUERY%"
+      - "vksearch:%QUERY%"
+      - "jssearch:%QUERY%"
+      - "ytmsearch:%QUERY%"
+      - "ytsearch:%QUERY%"
+      - "scsearch:%QUERY%"
+    sources:
+      spotify: ${ENABLE_SPOTIFY:false}
+      applemusic: ${ENABLE_APPLE_MUSIC:false}
+      deezer: ${ENABLE_DEEZER:false}
+      yandexmusic: ${ENABLE_YANDEX_MUSIC:false}
+      vkmusic: ${ENABLE_VK_MUSIC:false}
+      tidal: ${ENABLE_TIDAL:false}
+      qobuz: ${ENABLE_QOBUZ:false}
+      ytdlp: true
+      flowerytts: ${ENABLE_FLOWERY_TTS:true}
+      youtube: true
+      jiosaavn: ${ENABLE_JIOSAAVN:false}
+    lyrics-sources:
+      spotify: ${ENABLE_SPOTIFY:false}
+      deezer: ${ENABLE_DEEZER:false}
+      youtube: true
+      yandexmusic: ${ENABLE_YANDEX_MUSIC:false}
+      vkmusic: ${ENABLE_VK_MUSIC:false}
+      lrcLib: true

@@ -34,7 +34,6 @@ yt-dlp extractor count: 1727
 
 These are not part of stable startup. Test one profile at a time.
 
-- PulseLink replacement profile: Spotify, Amazon Music, Apple Music, Tidal, Qobuz, Deezer, Yandex Music, VK Music, JioSaavn, Audiomack, Gaana, Shazam, Pandora, SoundCloud, yt-dlp, FloweryTTS, YouTube search, and lyrics paths.
 - DuncteBot profile: Mixcloud, OCR Remix, Clyp.it, Reddit, GetYarn, `speak:` TTS, TikTok, Soundgasm, Pixeldrain, and Tumblr.
 - Gaana profile: `gaanasearch:` plus Gaana songs, albums, playlists, and artist pages.
 

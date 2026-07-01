@@ -1,0 +1,19 @@
+# OskarSource Stack identifiers for lavaclient.
+# Run with -AllowFailures if optional credential-backed sources are disabled.
+ytsearch:alan walker faded
+ytmsearch:alan walker faded
+scsearch:alan walker faded
+ftts://hello%20from%20oskarlink
+https://www.youtube.com/watch?v=60ItHLz5WEA
+https://soundcloud.com/alanwalker/faded-slushii-remix-1
+https://vimeo.com/148751763
+spsearch:alan walker faded
+amsearch:alan walker faded
+dzsearch:alan walker faded
+dzisrc:GBARL9300135
+ymsearch:alan walker faded
+vksearch:alan walker faded
+tdsearch:alan walker faded
+qbsearch:alan walker faded
+qbisrc:GBARL9300135
+jssearch:alan walker faded

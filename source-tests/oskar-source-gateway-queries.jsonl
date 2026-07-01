@@ -1,0 +1,27 @@
+{"source":"youtube","query":"alan walker faded","expected":"ytsearch:alan walker faded"}
+{"source":"youtubemusic","query":"alan walker faded","expected":"ytmsearch:alan walker faded"}
+{"source":"soundcloud","query":"alan walker faded","expected":"scsearch:alan walker faded"}
+{"source":"spotify","query":"alan walker faded","expected":"spsearch:alan walker faded"}
+{"source":"applemusic","query":"alan walker faded","expected":"amsearch:alan walker faded"}
+{"source":"amazonmusic","query":"alan walker faded","expected":"ytmsearch:alan walker faded amazon music"}
+{"source":"deezer","query":"alan walker faded","expected":"dzsearch:alan walker faded"}
+{"source":"tidal","query":"alan walker faded","expected":"tdsearch:alan walker faded"}
+{"source":"qobuz","query":"alan walker faded","expected":"qbsearch:alan walker faded"}
+{"source":"jiosaavn","query":"alan walker faded","expected":"jssearch:alan walker faded"}
+{"source":"audiomack","query":"alan walker faded","expected":"ytmsearch:alan walker faded audiomack"}
+{"source":"gaana","query":"alan walker faded","expected":"gaanasearch:alan walker faded"}
+{"source":"shazam","query":"alan walker faded","expected":"ytmsearch:alan walker faded shazam"}
+{"source":"pandora","query":"alan walker faded","expected":"ytmsearch:alan walker faded pandora"}
+{"source":"flowerytts","query":"hello from oskarlink","expected":"ftts://hello%20from%20oskarlink"}
+{"source":"bandcamp","query":"alan walker faded","expected":"ytsearch:alan walker faded bandcamp"}
+{"source":"vimeo","query":"alan walker faded","expected":"ytsearch:alan walker faded vimeo"}
+{"source":"tiktok","query":"alan walker faded","expected":"ytsearch:alan walker faded tiktok"}
+{"source":"beatport","query":"tech house set","expected":"ytmsearch:tech house set beatport"}
+{"source":"napster","query":"alan walker faded","expected":"ytmsearch:alan walker faded napster"}
+{"source":"iheart","query":"live radio mix","expected":"ytsearch:live radio mix iheartradio"}
+{"source":"instagram","query":"music clip","expected":"ytsearch:music clip instagram"}
+{"source":"twitter","query":"music clip","expected":"ytsearch:music clip twitter"}
+{"source":"archiveorg","query":"public domain audio","expected":"ytsearch:public domain audio internet archive"}
+{"source":"soundgasm","query":"audio story","expected":"ytsearch:audio story soundgasm"}
+{"source":"ocremix","query":"zelda remix","expected":"ytsearch:zelda remix ocremix"}
+{"source":"applepodcasts","query":"music podcast","expected":"ytsearch:music podcast apple podcast"}

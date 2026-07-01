@@ -14,6 +14,23 @@ Broad source coverage comes from yt-dlp. This is the only sane way to reach hund
 
 OskarLink keeps yt-dlp as an external helper at `./bin/yt-dlp`, so it can be updated independently from Lavalink.
 
+## OskarSource Stack
+
+OskarSource Stack is the lavaclient-compatible replacement for PulseLink. It is not a new jar. It is a controlled LavaSrc provider order plus yt-dlp and feature flags.
+
+Files:
+
+- `profiles/lavaclient-oskar-source-stack.yml`
+- `config/application.lavaclient-max.yml`
+- `docs/LAVACLIENT_COMPAT.md`
+- `companions/oskar-source-gateway`
+
+This keeps the bot on standard Lavalink `/v4/loadtracks` behavior while still giving broad source coverage.
+
+The gateway is OskarLink-owned code. It maps source choices to normal Lavalink
+identifiers and exposes the yt-dlp extractor catalog without adding another
+Lavalink plugin conflict.
+
 ## Companion Layer
 
 Companions are side services:
@@ -39,4 +56,3 @@ Every stable change needs:
 - artifact availability check.
 - no committed secrets.
 - live `/v4/loadtracks` smoke test after deployment.
-

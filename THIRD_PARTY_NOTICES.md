@@ -7,6 +7,10 @@ OskarLink is a distribution layer. It does not claim ownership over Lavalink, yt
 - Lavalink: https://github.com/lavalink-devs/Lavalink
 - yt-dlp: https://github.com/yt-dlp/yt-dlp
 
+## OskarLink-Owned Components
+
+- OskarSource Gateway: `companions/oskar-source-gateway`
+
 ## Plugins
 
 - youtube-source: https://github.com/lavalink-devs/youtube-source
@@ -23,7 +27,6 @@ OskarLink is a distribution layer. It does not claim ownership over Lavalink, yt
 
 ## Experimental Plugin Research
 
-- PulseLink: https://github.com/ItzRandom23/PulseLink
 - DuncteBot Skybot Lavalink Plugin: https://github.com/DuncteBot/skybot-lavalink-plugin
 - DuncteBot Google Cloud TTS Plugin: https://github.com/DuncteBot/tts-plugin
 - DuncteBot Java Timed Lyrics: https://github.com/DuncteBot/java-timed-lyrics

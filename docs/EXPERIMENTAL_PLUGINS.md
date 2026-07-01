@@ -4,15 +4,11 @@ These are not in the stable OskarLink profile because they can add conflicts, re
 
 Latest research pass: `docs/WEB_RESEARCH_2026-07-01.md`.
 
-## PulseLink
+## PulseLink Rejected
 
 Repository: https://github.com/ItzRandom23/PulseLink
 
-Profile: `profiles/experimental-pulselink-replace-lavasrc.yml`
-
-PulseLink is the biggest experimental expansion found in the current web pass. It can resolve Spotify, Amazon Music, Apple Music, Tidal, Qobuz, Deezer, Yandex Music, VK Music, JioSaavn, Audiomack, Gaana, Shazam, Pandora, SoundCloud, yt-dlp, FloweryTTS, YouTube search, and lyrics paths.
-
-Do not merge it directly into the stable profile. It overlaps with LavaSrc prefixes and source ownership, so test it as a replacement profile on a separate node first.
+PulseLink is not shipped as a profile because it does not work with the current lavaclient integration. It also overlaps LavaSrc source ownership and search prefixes, which makes it a poor fit for this distribution.
 
 ## DuncteBot Skybot Source Plugin
 
@@ -48,7 +44,7 @@ Adds timed YouTube lyrics and optional Genius fallback. It is not included by de
 
 Repository: https://github.com/bongo-devs/jiosaavn-plugin
 
-The advertised Maven host did not resolve during validation, so this is rejected from stable. Keep JioSaavn through LavaSrc or the PulseLink test profile instead.
+The advertised Maven host did not resolve during validation, so this is rejected from stable. Keep JioSaavn through LavaSrc instead.
 
 ## soundy
 

@@ -13,6 +13,10 @@ param(
     "https://soundcloud.com/alanwalker/faded-slushii-remix-1"
   ),
 
+  [string]$IdentifierFile,
+
+  [switch]$AllowFailures,
+
   [int]$TimeoutSec = 30
 )
 
@@ -21,6 +25,12 @@ $ErrorActionPreference = "Stop"
 $base = $BaseUrl.TrimEnd("/")
 $headers = @{ Authorization = $Password }
 $failed = 0
+
+if ($IdentifierFile) {
+  $Identifiers = Get-Content -Path $IdentifierFile |
+    ForEach-Object { $_.Trim() } |
+    Where-Object { $_ -and -not $_.StartsWith("#") }
+}
 
 foreach ($identifier in $Identifiers) {
   $encoded = [System.Uri]::EscapeDataString($identifier)
@@ -50,7 +60,10 @@ foreach ($identifier in $Identifiers) {
   }
 }
 
-if ($failed -gt 0) {
+if ($failed -gt 0 -and -not $AllowFailures) {
   throw "Loadtracks smoke test failed: $failed"
 }
 
+if ($failed -gt 0) {
+  "Loadtracks completed with allowed failures: $failed"
+}

@@ -2,7 +2,8 @@
 
 This pass searched the public Lavalink plugin ecosystem and validated reachable
 jar URLs where possible. Stable OskarLink stays conservative; new risky sources
-are documented as separate experimental profiles.
+are documented as separate experimental profiles only when they fit the current
+lavaclient integration.
 
 ## Sources Checked
 
@@ -21,12 +22,12 @@ are documented as separate experimental profiles.
 
 | Candidate | New coverage | Artifact check | Decision |
 | --- | --- | --- | --- |
-| PulseLink `v1.6.2` | Spotify, Amazon Music, Apple Music, Tidal, Qobuz, Deezer, Yandex, VK, JioSaavn, Audiomack, Gaana, Shazam, Pandora, SoundCloud, yt-dlp, FloweryTTS, YouTube | `200` from JitPack | Experimental replacement for LavaSrc, not stable, because prefixes and source ownership overlap heavily. |
+| PulseLink `v1.6.2` | Spotify, Amazon Music, Apple Music, Tidal, Qobuz, Deezer, Yandex, VK, JioSaavn, Audiomack, Gaana, Shazam, Pandora, SoundCloud, yt-dlp, FloweryTTS, YouTube | `200` from JitPack | Rejected. It does not work with the current lavaclient integration and overlaps LavaSrc prefixes. |
 | DuncteBot Skybot `1.7.1` | Mixcloud, OCR Remix, Clyp.it, Reddit, GetYarn, TTS `speak:`, TikTok, Soundgasm, Pixeldrain, Tumblr | `200` from Lavalink Maven | Experimental only. Previous runtime testing hit class-loading failures and TikTok/Tumblr are fragile. |
 | Gaana `1.0.2` | `gaanasearch:` plus Gaana songs, albums, playlists, artist pages | `200` from JitPack | Experimental profile added. Dedicated prefix, but low adoption and needs real loadtracks testing. |
 | Java Timed Lyrics `1.6.6` | YouTube lyrics, timed lyrics, optional Genius fallback, LavaLyrics bridge | `200` from Lavalink Maven | Not added to stable because prior testing failed against this Lavalink runtime and it conflicts with LavaLyrics mode choices. |
 | Google Cloud TTS `1.0.1` | `tts://` Google Cloud TTS | `200` from JitPack | Not added to stable because it requires paid credentials and fails when service-account fields are absent. |
-| JioSaavn standalone plugin `1.0.6` | JioSaavn direct source | Maven host failed DNS | Rejected. Keep LavaSrc/PulseLink JioSaavn paths only. |
+| JioSaavn standalone plugin `1.0.6` | JioSaavn direct source | Maven host failed DNS | Rejected. Keep LavaSrc JioSaavn only. |
 | soundy `1.0.0` | Alternative SoundCloud source | Lavalink Maven returned `404` | Build-from-source research only until a jar is published. |
 | NodeLink | Alternative node engine with overlapping goals | Not a Lavalink plugin | Comparison research only; not part of OskarLink stable Lavalink distribution. |
 
@@ -40,7 +41,6 @@ The best stable broad-source path is still:
 
 The new experimental profiles are intentionally separate:
 
-- `profiles/experimental-pulselink-replace-lavasrc.yml`
 - `profiles/experimental-dunctebot-sources.yml`
 - `profiles/experimental-gaana.yml`
 

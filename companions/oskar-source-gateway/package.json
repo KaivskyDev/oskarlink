@@ -1,0 +1,18 @@
+{
+  "name": "@oskarlink/source-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "OskarLink source resolver companion for lavaclient and Lavalink.",
+  "license": "SEE LICENSE IN ../../LICENSE.md",
+  "bin": {
+    "oskar-source-gateway": "./bin/oskar-source-gateway.mjs"
+  },
+  "scripts": {
+    "start": "node ./bin/oskar-source-gateway.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

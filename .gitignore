@@ -7,9 +7,10 @@ logs/
 plugins/
 bin/
 tmp/
+node_modules/
+npm-debug.log*
 OskarLink.jar
 Lavalink.jar
 *.jar
 *.log
 *.pid
-

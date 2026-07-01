@@ -11,6 +11,7 @@ Lavalink is ready to accept connections.
 Useful secondary signals:
 
 - plugin jars download successfully,
+- OskarLink preflight checks pass,
 - `/v4/info` responds,
 - `/v4/stats` responds,
 - a bot opens a websocket connection,
@@ -22,6 +23,12 @@ Run after deployment:
 
 ```powershell
 .\scripts\test-loadtracks.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "your-password"
+```
+
+You can also load identifiers from a file:
+
+```powershell
+.\scripts\test-loadtracks.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "your-password" -IdentifierFile ".\source-tests\smoke-identifiers.txt"
 ```
 
 Minimum identifiers:
@@ -50,6 +57,41 @@ The doctor checks:
 
 Some endpoints can be disabled depending on config. That is fine as long as core info and stats respond.
 
+## Lavaclient Max Test
+
+For the OskarSource Stack profile, run the broad test in reporting mode:
+
+```powershell
+.\scripts\test-loadtracks.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "your-password" -IdentifierFile ".\source-tests\lavaclient-max-identifiers.txt" -AllowFailures
+```
+
+Failures are expected for optional sources until their credentials are enabled.
+
+## OskarSource Gateway
+
+Run the owned source resolver companion:
+
+```powershell
+.\scripts\start-oskar-source-gateway.ps1 -Port 2444 -YtDlpPath ".\bin\yt-dlp"
+```
+
+Check it:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:2444/health
+Invoke-RestMethod http://127.0.0.1:2444/registry
+Invoke-RestMethod http://127.0.0.1:2444/sources?limit=20
+```
+
+The bot can call `/resolve`, then pass the returned `identifier` into
+`lavalink.rest.loadTracks(identifier)`.
+
+Run gateway mapping tests:
+
+```powershell
+.\scripts\test-oskar-source-gateway.ps1
+```
+
 ## Updating
 
 1. Run `scripts/validate-artifacts.ps1`.
@@ -68,3 +110,12 @@ First classify it:
 
 Do not remove working sources because of warnings. Disable only the failing source or plugin.
 
+## Calibration
+
+Generate a calibrated config before release:
+
+```powershell
+.\scripts\calibrate-oskarlink.ps1 -Preset balanced
+```
+
+See `docs/CALIBRATION.md` and `docs/STARTUP_LOGS.md`.

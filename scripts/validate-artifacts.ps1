@@ -29,7 +29,6 @@ foreach ($artifact in $artifacts) {
 }
 
 $experimental = @(
-  @{ Name = "PulseLink experimental"; Url = "https://jitpack.io/com/github/ItzRandom23/PulseLink/v1.6.2/PulseLink-v1.6.2.jar" },
   @{ Name = "DuncteBot Skybot experimental"; Url = "https://maven.lavalink.dev/releases/com/dunctebot/skybot-lavalink-plugin/1.7.1/skybot-lavalink-plugin-1.7.1.jar" },
   @{ Name = "Gaana experimental"; Url = "https://jitpack.io/com/github/notdeltaxd/gaana-plugin/1.0.2/gaana-plugin-1.0.2.jar" },
   @{ Name = "Java Timed Lyrics experimental"; Url = "https://maven.lavalink.dev/releases/me/duncte123/java-lyrics-plugin/1.6.6/java-lyrics-plugin-1.6.6.jar" },

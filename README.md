@@ -1,94 +1,273 @@
 # OskarLink
 
-OskarLink is a private, Lavalink-compatible audio node distribution curated by Oskar Trzaskawka.
+OskarLink is a Lavalink-compatible audio node distribution curated by Oskar Trzaskawka.
 
-It keeps Lavalink as the runtime and layers a pinned plugin stack on top. That gives you a custom branded node without merging random source repositories into one unstable jar.
+It keeps the stable Lavalink runtime, adds a pinned plugin stack, ships a broad source configuration, and includes an optional OskarSource Gateway for lavaclient-friendly source routing. The goal is predictable startup, clean configuration, and wide source coverage without stacking conflicting Lavalink plugins.
 
-## What To Upload
-
-Upload this folder to GitHub:
-
-```text
-upload-to-github/OskarLink
-```
-
-Do not upload local runtime output:
-
-```text
-application.yml
-logs/
-plugins/
-bin/
-OskarLink.jar
-*.jar
-*.env
-```
-
-The `.gitignore` already blocks those files.
-
-## Stable Plugin Stack
+## Features
 
 - Lavalink `4.2.2` by default.
-- youtube-source `1.18.1`.
-- LavaSrc `4.8.3`.
-- LavaSrc Failover `1.1.3`.
-- LavaSearch `1.0.0`.
-- LavaLyrics `1.1.0`.
-- SponsorBlock `3.0.1`.
-- LavaDSPX `0.0.5`.
-- Jellylink `v0.2.1`.
-- discovery-go `0.1.0`.
-- lavabili `1.3.1`.
-- lava-xm `0.2.8`.
-- yt-dlp helper installed into `./bin/yt-dlp`.
+- English OskarLink startup preflight logs in the Pterodactyl launcher.
+- Pinned plugin stack for YouTube, YouTube Music, SoundCloud, LavaSrc, LavaSearch, LavaLyrics, SponsorBlock, Jellyfin, Bilibili, tracker modules, and more.
+- LavaSrc services for Spotify, Apple Music, Deezer, Yandex Music, VK Music, Tidal, Qobuz, JioSaavn, Flowery TTS, and yt-dlp.
+- OskarSource Gateway with `60+` curated source keys for lavaclient bots.
+- Broad URL support through yt-dlp instead of fragile plugin stacking.
+- Calibration presets: `safe`, `balanced`, `throughput`, and `low-latency`.
 
-## Source Model
+## Requirements
 
-Native and plugin sources cover YouTube, YouTube Music, SoundCloud, SoundCloud Go+, Bandcamp, Twitch, Vimeo, Nico, HTTP URLs, Flowery TTS, Spotify, Apple Music, Deezer, Yandex Music, VK Music, Tidal, Qobuz, JioSaavn, Jellyfin, Bilibili, tracker modules, LavaLyrics, SponsorBlock, and broad URL support through yt-dlp.
+- Java `17+`; Java `21` is recommended.
+- `curl` or another download tool.
+- PowerShell `7+` for the included `.ps1` helper scripts.
+- Node.js `20+` only if you want to run OskarSource Gateway.
+- A bot/client that supports the Lavalink v4 REST/WebSocket API.
 
-The real 200+ source count comes from yt-dlp. On July 1, 2026, the current yt-dlp supported-sites document listed 1727 extractors. That is the stable way to get hundreds of resolvable sites without stacking fragile Lavalink plugins.
+## Quick Start On A Machine
 
-Extra infnibor repositories are tracked in `docs/INFNIBOR_REPOS.md`. `yt-cipher` is useful as a separate companion service, while `soundy`, `Rustalink`, `libdave-jvm`, `yt-dlp-web-ui`, and `amazon-music-api` are not part of stable startup.
+Clone or download this repository, then enter the project directory:
 
-The July 1, 2026 web research pass added separate experimental profiles for PulseLink, DuncteBot source managers, and Gaana. See `docs/WEB_RESEARCH_2026-07-01.md` and `docs/EXPERIMENTAL_PLUGINS.md`. These are intentionally not merged into stable because source prefixes can collide.
+```bash
+cd OskarLink
+```
 
-## Pterodactyl
+Download the Lavalink runtime as `OskarLink.jar`:
 
-Import:
+```bash
+curl -fL https://github.com/lavalink-devs/Lavalink/releases/download/4.2.2/Lavalink.jar -o OskarLink.jar
+```
+
+Create your runtime config:
+
+```bash
+cp config/application.example.yml application.yml
+```
+
+Start the node:
+
+```bash
+java -XX:MaxRAMPercentage=95.0 -XX:InitialRAMPercentage=25.0 -jar OskarLink.jar
+```
+
+The node is ready when the logs include:
+
+```text
+Lavalink is ready to accept connections.
+```
+
+Default connection values:
+
+```text
+Host: 127.0.0.1
+Port: 2333
+Password: youshallnotpass
+Secure: false
+```
+
+Change the password in `application.yml` before exposing the node.
+
+## Windows Quick Start
+
+From PowerShell:
+
+```powershell
+cd .\OskarLink
+Invoke-WebRequest -Uri "https://github.com/lavalink-devs/Lavalink/releases/download/4.2.2/Lavalink.jar" -OutFile "OskarLink.jar"
+Copy-Item .\config\application.example.yml .\application.yml
+java -XX:MaxRAMPercentage=95.0 -XX:InitialRAMPercentage=25.0 -jar .\OskarLink.jar
+```
+
+Run a basic health check after startup:
+
+```powershell
+.\scripts\doctor.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "youshallnotpass"
+```
+
+Run a loadtracks test:
+
+```powershell
+.\scripts\test-loadtracks.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "youshallnotpass"
+```
+
+## Pterodactyl Setup
+
+Import this egg in your panel:
 
 ```text
 pterodactyl/egg-oskarlink.json
 ```
 
-Set `OSKARLINK_RAW_BASE_URL` after uploading the repo, for example:
+Recommended variables:
 
 ```text
-https://raw.githubusercontent.com/YOUR_USERNAME/OskarLink/main
+LAVALINK_PASSWORD=change-this-password
+OSKARLINK_PROFILE=balanced
+OSKARLINK_PRESTART_CHECKS=true
+OSKARLINK_JAVA_MAX_RAM=95.0
+OSKARLINK_JAVA_INITIAL_RAM=25.0
 ```
 
-The egg will download `config/application.example.yml` from that repo. If the raw URL is not set, the egg uses its embedded fallback config.
+If the repository is public, set the raw base URL so the installer can download the current config:
+
+```text
+OSKARLINK_RAW_BASE_URL=https://raw.githubusercontent.com/KaivskyDev/oskarlink/main
+```
+
+For the broad lavaclient-compatible profile, set:
+
+```text
+OSKARLINK_CONFIG_URL=https://raw.githubusercontent.com/KaivskyDev/oskarlink/main/config/application.lavaclient-max.yml
+```
+
+After changing `OSKARLINK_CONFIG_URL`, reinstall the server so the egg downloads the selected config again.
+
+## Configuration Files
+
+- `config/application.example.yml` is the stable default profile.
+- `config/application.lavaclient-max.yml` enables the broader lavaclient-oriented stack.
+- `config/application.calibrated.yml` is generated by the calibration script.
+- `profiles/` contains optional profile examples.
+
+Generate a calibrated config:
+
+```powershell
+.\scripts\calibrate-oskarlink.ps1 -Preset balanced
+```
+
+Available presets:
+
+```text
+safe
+balanced
+throughput
+low-latency
+```
+
+Use `safe` for weaker machines, `balanced` for most nodes, `throughput` for larger public nodes, and `low-latency` when fast player updates matter more than large playlist throughput.
+
+## OskarSource Gateway
+
+OskarSource Gateway is an optional companion service. It lets bots send a source name and query, then returns a normal Lavalink identifier such as `ytsearch:`, `ytmsearch:`, `spsearch:`, `amsearch:`, `dzsearch:`, or a safe fallback.
+
+Start it:
+
+```bash
+cd companions/oskar-source-gateway
+npm start
+```
+
+Default URL:
+
+```text
+http://127.0.0.1:2444
+```
+
+Health check:
+
+```bash
+curl http://127.0.0.1:2444/health
+```
+
+Resolve a query:
+
+```bash
+curl -X POST http://127.0.0.1:2444/resolve \
+  -H "content-type: application/json" \
+  -d '{"source":"applemusic","query":"alan walker faded"}'
+```
+
+Run the gateway test set from the project root:
+
+```powershell
+.\scripts\test-oskar-source-gateway.ps1 -BaseUrl "http://127.0.0.1:2444"
+```
+
+## Bot Connection Example
+
+Use normal Lavalink connection settings in your bot:
+
+```json
+{
+  "host": "127.0.0.1",
+  "port": 2333,
+  "password": "youshallnotpass",
+  "secure": false
+}
+```
+
+If the bot runs in another container or on another machine, use the real network hostname instead of `127.0.0.1`.
+
+## Source Coverage
+
+The stable plugin stack covers the normal Lavalink/LavaSrc services. OskarSource Gateway adds user-friendly source keys such as:
+
+```text
+youtube, youtubemusic, soundcloud, spotify, applemusic, amazonmusic,
+deezer, yandexmusic, vkmusic, tidal, qobuz, jiosaavn, flowerytts,
+jellyfin, gaana, audiomack, shazam, pandora, bandcamp, vimeo, twitch,
+niconico, bilibili, mixcloud, tiktok, reddit, bluesky, telegram,
+odysee, rumble, peertube, archive, beatport, napster, iheart,
+instagram, twitter, applepodcasts, spotifyepisodes
+```
+
+The real long-tail coverage comes from yt-dlp. That is the preferred way to support hundreds of URL-based sites without adding many conflicting Lavalink plugins.
 
 ## Secrets
 
 Never commit real tokens, cookies, passwords, ARL values, OAuth refresh tokens, Apple Music JWTs, VK tokens, Yandex tokens, Jellyfin passwords, or remote-cipher passwords.
 
-Use Pterodactyl variables for secrets. If a token was ever pasted into a prompt, public chat, or committed file, rotate it.
+Set secrets in your server panel, process manager, or private runtime config:
 
-## Validation
+```text
+LAVALINK_PASSWORD
+SPOTIFY_CLIENT_SECRET
+SPOTIFY_SP_DC
+APPLE_MUSIC_TOKEN
+DEEZER_MASTER_KEY
+DEEZER_ARL
+YANDEX_ACCESS_TOKEN
+VK_USER_TOKEN
+TIDAL_TOKEN
+QOBUZ_USER_OAUTH_TOKEN
+JIOSAAVN_SECRET
+JELLYFIN_PASSWORD
+SOUNDCLOUD_OAUTH_TOKEN
+YOUTUBE_OAUTH_REFRESH_TOKEN
+YOUTUBE_POT_TOKEN
+YOUTUBE_VISITOR_DATA
+```
 
-Before pushing a release:
+If a secret was ever shared publicly or committed to Git, rotate it.
+
+## Troubleshooting
+
+If the node does not start, check these first:
+
+- `OskarLink.jar` exists and is not empty.
+- Java is installed and `java -version` works.
+- `application.yml` exists in the runtime directory.
+- The configured password in your bot matches `lavalink.server.password`.
+- The bot uses `secure: false` for local HTTP and `secure: true` only behind HTTPS.
+- Stale plugin jars were removed from `plugins/` after changing plugin configuration.
+- Secret-dependent sources stay disabled until their credentials are valid.
+
+Useful commands:
 
 ```powershell
 .\scripts\scan-secrets.ps1
 .\scripts\validate-artifacts.ps1
-.\scripts\build-egg.ps1
-```
-
-After deployment:
-
-```powershell
 .\scripts\doctor.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "your-password"
 .\scripts\test-loadtracks.ps1 -BaseUrl "http://127.0.0.1:2333" -Password "your-password"
 ```
 
-Architecture, operations, plugin decisions, and source policy are documented under `docs/`.
+More documentation is available in `docs/`, especially:
+
+- `docs/CALIBRATION.md`
+- `docs/STARTUP_LOGS.md`
+- `docs/OSKAR_SOURCE_REGISTRY.md`
+- `docs/LAVACLIENT_COMPAT.md`
+- `docs/OPERATIONS.md`
+- `docs/SOURCE_POLICY.md`
+
+## License And Notices
+
+OskarLink is maintained by Oskar Trzaskawka. Third-party components keep their own licenses and notices. See `LICENSE.md` and `THIRD_PARTY_NOTICES.md`.

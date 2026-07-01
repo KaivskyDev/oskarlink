@@ -65,6 +65,86 @@ else
   printf '%s\n' '[OskarLink] Keeping existing application.yml'
 fi
 
+cat > start-oskarlink.sh <<'SH'
+#!/bin/bash
+set -euo pipefail
+
+ts() {
+  date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+log() {
+  printf '[%s] [OskarLink] [%s] %s\n' "`$(ts)" "`$1" "`$2"
+}
+
+profile="`${OSKARLINK_PROFILE:-balanced}"
+prestart_checks="`${OSKARLINK_PRESTART_CHECKS:-true}"
+max_ram="`${OSKARLINK_JAVA_MAX_RAM:-95.0}"
+initial_ram="`${OSKARLINK_JAVA_INITIAL_RAM:-25.0}"
+extra_flags="`${OSKARLINK_EXTRA_JAVA_FLAGS:-}"
+
+log BOOT "OskarLink startup sequence initialized"
+log INFO "Profile: `${profile}"
+log INFO "Working directory: `$(pwd)"
+log INFO "Java MaxRAMPercentage: `${max_ram}"
+log INFO "Java InitialRAMPercentage: `${initial_ram}"
+
+if [ "`${prestart_checks}" = "true" ]; then
+  log INFO "Running preflight checks"
+
+  if [ ! -s OskarLink.jar ]; then
+    log ERROR "OskarLink.jar is missing or empty"
+    exit 20
+  fi
+  log OK "Found OskarLink.jar"
+
+  if [ ! -s application.yml ]; then
+    log ERROR "application.yml is missing or empty"
+    exit 21
+  fi
+  log OK "Found application.yml"
+
+  java_version="`$(java -version 2>&1 | head -n 1 || true)"
+  if [ -z "`${java_version}" ]; then
+    log ERROR "Java is not available"
+    exit 22
+  fi
+  log OK "Java runtime: `${java_version}"
+
+  plugin_count="`$(grep -c '^[[:space:]]*- dependency:' application.yml 2>/dev/null || true)"
+  log INFO "Configured plugin dependencies: `${plugin_count:-0}"
+
+  if [ -x ./bin/yt-dlp ]; then
+    ytdlp_version="`$(./bin/yt-dlp --version 2>/dev/null || true)"
+    log OK "yt-dlp helper: `${ytdlp_version:-installed}"
+  elif command -v yt-dlp >/dev/null 2>&1; then
+    ytdlp_version="`$(yt-dlp --version 2>/dev/null || true)"
+    log OK "yt-dlp from PATH: `${ytdlp_version:-installed}"
+  else
+    log WARN "yt-dlp was not found; broad URL sources will be limited"
+  fi
+
+  if grep -qi 'PulseLink' application.yml; then
+    log WARN "PulseLink reference detected; this distribution rejects PulseLink for lavaclient compatibility"
+  fi
+else
+  log WARN "Preflight checks are disabled"
+fi
+
+log BOOT "Handing off to Lavalink runtime"
+
+cmd=(java "-XX:MaxRAMPercentage=`${max_ram}" "-XX:InitialRAMPercentage=`${initial_ram}")
+if [ -n "`${extra_flags}" ]; then
+  # shellcheck disable=SC2206
+  extra=(`${extra_flags})
+  cmd+=("`${extra[@]}")
+fi
+cmd+=(-jar OskarLink.jar "`$@")
+
+exec "`${cmd[@]}"
+SH
+chmod +x start-oskarlink.sh
+
 printf '%s\n' '[OskarLink] Installation completed'
 "@
 
@@ -93,10 +173,15 @@ function New-VariableDef {
 
 $variables = @(
   New-VariableDef "Lavalink Version" "Pinned Lavalink release tag. Use latest only after testing plugin compatibility." "LAVALINK_VERSION" "4.2.2" $true "required|string|max:32"
-  New-VariableDef "OskarLink Raw Base URL" "Optional raw GitHub base URL, for example https://raw.githubusercontent.com/user/OskarLink/main." "OSKARLINK_RAW_BASE_URL" "" $true "nullable|string|max:512"
+  New-VariableDef "OskarLink Raw Base URL" "Optional raw GitHub base URL, for example https://raw.githubusercontent.com/KaivskyDev/oskarlink/main." "OSKARLINK_RAW_BASE_URL" "https://raw.githubusercontent.com/KaivskyDev/oskarlink/main" $true "nullable|string|max:512"
   New-VariableDef "OskarLink Config URL" "Optional direct URL to application.yml. Overrides OSKARLINK_RAW_BASE_URL." "OSKARLINK_CONFIG_URL" "" $true "nullable|string|max:512"
   New-VariableDef "OskarLink Jar URL" "Optional direct custom jar URL. Leave empty to download Lavalink release." "OSKARLINK_JAR_URL" "" $true "nullable|string|max:512"
   New-VariableDef "Clean Plugin Jars" "Deletes stale plugin jars during install." "CLEAN_PLUGIN_JARS" "true" $true "required|string|in:true,false"
+  New-VariableDef "OskarLink Profile" "Startup/calibration profile printed by the OskarLink launcher." "OSKARLINK_PROFILE" "balanced" $true "required|string|in:safe,balanced,throughput,low-latency"
+  New-VariableDef "OskarLink Prestart Checks" "Runs English startup preflight checks before Lavalink starts." "OSKARLINK_PRESTART_CHECKS" "true" $true "required|string|in:true,false"
+  New-VariableDef "Java Max RAM Percentage" "Value passed to -XX:MaxRAMPercentage." "OSKARLINK_JAVA_MAX_RAM" "95.0" $true "required|numeric|min:10|max:100"
+  New-VariableDef "Java Initial RAM Percentage" "Value passed to -XX:InitialRAMPercentage." "OSKARLINK_JAVA_INITIAL_RAM" "25.0" $true "required|numeric|min:1|max:100"
+  New-VariableDef "Extra Java Flags" "Optional extra JVM flags appended by start-oskarlink.sh." "OSKARLINK_EXTRA_JAVA_FLAGS" "" $true "nullable|string|max:2048"
   New-VariableDef "Lavalink Password" "Authorization password used by your bot client." "LAVALINK_PASSWORD" "youshallnotpass" $false "required|string|max:256"
   New-VariableDef "Music Country" "Country code used by source APIs." "MUSIC_COUNTRY" "US" $true "required|string|size:2"
   New-VariableDef "Enable HTTP Source" "Allows direct HTTP audio URLs." "ENABLE_HTTP_SOURCE" "true" $true "required|string|in:true,false"
@@ -159,7 +244,7 @@ $egg = [ordered]@{
     "ghcr.io/parkervcp/yolks:java_25" = "ghcr.io/parkervcp/yolks:java_25"
   }
   file_denylist = @()
-  startup = "java -XX:MaxRAMPercentage=95.0 -XX:InitialRAMPercentage=25.0 -jar OskarLink.jar --server.port={{SERVER_PORT}} --lavalink.server.password={{LAVALINK_PASSWORD}}"
+  startup = "bash ./start-oskarlink.sh --server.port={{SERVER_PORT}} --lavalink.server.password={{LAVALINK_PASSWORD}}"
   config = [ordered]@{
     files = "{`n  `"application.yml`": {`n    `"parser`": `"yml`"`n  }`n}"
     startup = "{`n  `"done`": `"Lavalink is ready to accept connections.`"`n}"
@@ -180,4 +265,3 @@ $json = $egg | ConvertTo-Json -Depth 20
 Set-Content -Path $outPath -Value $json -Encoding UTF8
 Copy-Item -Path $outPath -Destination (Join-Path (Split-Path -Parent $root) "..\egg-oskarlink.json") -Force
 "Wrote $outPath"
-

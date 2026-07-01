@@ -23,12 +23,25 @@
 | yt-cipher | YouTube remote cipher service | Optional. Lavalink must boot without it. |
 | yt-dlp-web-ui | yt-dlp UI/RPC service | Optional. Not in audio path. |
 
+## Profiles
+
+| Profile | Purpose |
+| --- | --- |
+| lavaclient-oskar-source-stack | PulseLink replacement strategy using LavaSrc provider order, yt-dlp, and normal `/v4/loadtracks` identifiers |
+
+## Owned Components
+
+| Component | Purpose |
+| --- | --- |
+| OskarSource Gateway | HTTP resolver companion that maps source choices to Lavalink identifiers and exposes the yt-dlp extractor catalog |
+| OskarSource Registry | Owned source map covering LavaSrc prefixes, PulseLink-like mirror names, direct URL sources, and yt-dlp long-tail sources |
+| OskarLink Launcher | Startup wrapper with English preflight logs and calibration-aware Java flags |
+
 ## Experimental
 
 | Plugin | Reason |
 | --- | --- |
 | soundy | SoundCloud overlap and current Maven artifact unavailable during validation |
-| PulseLink | Very broad source resolver, but overlaps LavaSrc prefixes and should replace rather than stack with LavaSrc |
 | DuncteBot Skybot | Adds many niche sources but previously failed runtime class loading |
 | Gaana | Dedicated Gaana source with reachable artifact, but low adoption and needs real playback validation |
 | Google Cloud TTS | Requires paid credentials and fails when credentials are missing |
@@ -38,7 +51,8 @@
 
 | Project | Reason |
 | --- | --- |
-| Standalone JioSaavn plugin | Advertised Maven host was unavailable during validation; use LavaSrc/PulseLink paths instead |
+| PulseLink | Does not work with the current lavaclient integration and overlaps LavaSrc prefixes |
+| Standalone JioSaavn plugin | Advertised Maven host was unavailable during validation; use LavaSrc paths instead |
 | Amazon Music streaming APIs with Widevine paths | Legal and operational risk. Use metadata-only research at most. |
 | Random public node configs | Usually unpinned, secret-heavy, or incompatible with current Lavalink |
 | Physical stale jars in `plugins/` | They load even if removed from YAML, so the egg cleans them during install |

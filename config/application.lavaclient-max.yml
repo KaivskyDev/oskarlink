@@ -1,0 +1,301 @@
+﻿# Generated from config/application.example.yml by scripts/new-lavaclient-max-config.ps1.
+# Use with lavaclient when you want the broad OskarSource resolver order without PulseLink.
+server:
+  port: 2333
+  address: 0.0.0.0
+  http2:
+    enabled: false
+  compression:
+    enabled: true
+    mime-types: application/json,text/plain
+  tomcat:
+    connection-timeout: 30s
+    accept-count: 200
+    threads:
+      min-spare: 16
+      max: 256
+
+spring:
+  main:
+    banner-mode: "off"
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  mvc:
+    async:
+      request-timeout: 45s
+  codec:
+    max-in-memory-size: 16MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  metrics:
+    tags:
+      application: oskarlink
+
+lavalink:
+  plugins:
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+    - dependency: "io.github.lavalink-addons:lavasrc-failover-plugin:1.1.3"
+      repository: "https://repo1.maven.org/maven2"
+      snapshot: false
+    - dependency: "com.github.topi314.lavasearch:lavasearch-plugin:1.0.0"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+    - dependency: "com.github.topi314.lavalyrics:lavalyrics-plugin:1.1.0"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+    - dependency: "com.github.topi314.sponsorblock:sponsorblock-plugin:3.0.1"
+      repository: "https://maven.lavalink.dev/releases"
+      snapshot: false
+    - dependency: "com.github.Devoxin:LavaDSPX-Plugin:0.0.5"
+      repository: "https://jitpack.io"
+      snapshot: false
+    - dependency: "com.github.Myxelium:Jellylink:v0.2.1"
+      repository: "https://jitpack.io"
+      snapshot: false
+    - dependency: "com.github.dubistmutig:discovery-go:0.1.0"
+      repository: "https://jitpack.io"
+      snapshot: false
+    - dependency: "com.github.ParrotXray:lavabili-plugin:1.3.1"
+      repository: "https://jitpack.io"
+      snapshot: false
+    - dependency: "net.esmbot:lava-xm-plugin:0.2.8"
+      repository: "https://repo.projectlounge.pw/maven/releases"
+      snapshot: false
+  pluginsDir: "./plugins"
+  defaultPluginRepository: "https://maven.lavalink.dev/releases"
+  defaultPluginSnapshotRepository: "https://maven.lavalink.dev/snapshots"
+  server:
+    password: "${LAVALINK_PASSWORD:youshallnotpass}"
+    sources:
+      youtube: false
+      bandcamp: true
+      soundcloud: true
+      twitch: true
+      vimeo: true
+      nico: true
+      http: ${ENABLE_HTTP_SOURCE:true}
+      local: ${ENABLE_LOCAL_SOURCE:false}
+    filters:
+      volume: true
+      equalizer: true
+      karaoke: true
+      timescale: true
+      tremolo: true
+      vibrato: true
+      distortion: true
+      rotation: true
+      channelMix: true
+      lowPass: true
+    nonAllocatingFrameBuffer: true
+    bufferDurationMs: 2000
+    frameBufferDurationMs: 12000
+    opusEncodingQuality: 10
+    resamplingQuality: HIGH
+    trackStuckThresholdMs: 30000
+    useSeekGhosting: true
+    youtubePlaylistLoadLimit: 12
+    playerUpdateInterval: 5
+    youtubeSearchEnabled: true
+    soundcloudSearchEnabled: true
+    soundcloudFilterOutPreviewTracks: true
+    gc-warnings: true
+    ratelimit:
+      ipBlocks: []
+      excludedIps: []
+      strategy: "RotateOnBan"
+      searchTriggersFail: true
+      retryLimit: 5
+    timeouts:
+      connectTimeoutMs: 10000
+      connectionRequestTimeoutMs: 10000
+      socketTimeoutMs: 10000
+
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    allowDirectVideoIds: true
+    allowDirectPlaylistIds: true
+    clients:
+      - TV
+      - TVHTML5_SIMPLY
+      - ANDROID_VR
+      - ANDROID_MUSIC
+      - IOS
+      - WEB
+      - MWEB
+      - WEBEMBEDDED
+      - MUSIC
+    clientOptions:
+      TV:
+        playback: true
+        playlistLoading: false
+        searching: false
+        videoLoading: true
+      TVHTML5_SIMPLY:
+        playback: true
+        playlistLoading: false
+        searching: false
+        videoLoading: true
+      ANDROID_VR:
+        playback: true
+        playlistLoading: true
+        searching: true
+        videoLoading: true
+      ANDROID_MUSIC:
+        playback: true
+        playlistLoading: true
+        searching: true
+        videoLoading: true
+      IOS:
+        playback: true
+        playlistLoading: true
+        searching: true
+        videoLoading: true
+      WEB:
+        playback: false
+        playlistLoading: true
+        searching: true
+        videoLoading: true
+      MWEB:
+        playback: false
+        playlistLoading: true
+        searching: true
+        videoLoading: true
+      WEBEMBEDDED:
+        playback: true
+        playlistLoading: false
+        searching: false
+        videoLoading: true
+      MUSIC:
+        playback: false
+        playlistLoading: false
+        searching: true
+        videoLoading: false
+    oauth:
+      enabled: ${YOUTUBE_OAUTH_ENABLED:false}
+      refreshToken: "${YOUTUBE_OAUTH_REFRESH_TOKEN:}"
+      skipInitialization: true
+    pot:
+      token: "${YOUTUBE_POT_TOKEN:}"
+      visitorData: "${YOUTUBE_VISITOR_DATA:}"
+    # Enable only when you run a trusted yt-cipher server.
+    # remoteCipher:
+    #   url: "${YOUTUBE_REMOTE_CIPHER_URL:}"
+    #   password: "${YOUTUBE_REMOTE_CIPHER_PASSWORD:}"
+    #   userAgent: "OskarLink"
+
+  lavasrc:
+    providers:
+      - "dzisrc:%ISRC%"
+      - "qbisrc:%ISRC%"
+      - "ytsearch:\"%ISRC%\""
+      - "ytmsearch:\"%ISRC%\""
+      - "dzsearch:%QUERY%"
+      - "qbsearch:%QUERY%"
+      - "tdsearch:%QUERY%"
+      - "amsearch:%QUERY%"
+      - "spsearch:%QUERY%"
+      - "ymsearch:%QUERY%"
+      - "vksearch:%QUERY%"
+      - "jssearch:%QUERY%"
+      - "ytmsearch:%QUERY%"
+      - "ytsearch:%QUERY%"
+      - "scsearch:%QUERY%"
+    sources:
+      - youtube
+      - lrcLib
+      - spotify
+      - deezer
+      - yandexMusic
+      - vkMusic
+
+  sponsorblock:
+    enabled: true
+
+  failover:
+    enabled: true
+    logLevel: INFO
+    failureThreshold: 3
+    endpointEnabled: true
+    endpointPath: /v4/failover/health
+
+  jellylink:
+    enabled: ${ENABLE_JELLYLINK:false}
+    server: "${JELLYFIN_SERVER:}"
+    username: "${JELLYFIN_USERNAME:}"
+    password: "${JELLYFIN_PASSWORD:}"
+    searchPrefix: "jfsearch"
+
+  discovery-go:
+    enabled: ${ENABLE_DISCOVERY_GO:false}
+    soundcloudOAuthToken: "${SOUNDCLOUD_OAUTH_TOKEN:}"
+
+  lavabili:
+    enabled: ${ENABLE_LAVABILI:true}
+    allowSearch: true
+    playlistPageCount: -1
+    auth:
+      enabled: ${BILIBILI_AUTH_ENABLED:false}
+      sessdata: "${BILIBILI_SESSDATA:}"
+      biliJct: "${BILIBILI_BILI_JCT:}"
+      buvid3: "${BILIBILI_BUVID3:}"
+
+metrics:
+  prometheus:
+    enabled: ${ENABLE_PROMETHEUS:true}
+    endpoint: /metrics
+
+sentry:
+  dsn: "${SENTRY_DSN:}"
+  environment: "${SENTRY_ENVIRONMENT:production}"
+
+logging:
+  file:
+    path: ./logs/
+    max-history: 14
+    max-size: 100MB
+  level:
+    root: INFO
+    lavalink: INFO
+    lavalink.server.io.SocketContext: OFF
+    com.sedmelluq.discord.lavaplayer.tools.ExceptionTools: OFF
+    com.sedmelluq.discord.lavaplayer.tools.io.PersistentHttpStream: OFF
+    com.sedmelluq.discord.lavaplayer.source.youtube.YoutubePersistentHttpStream: OFF
+    dev.lavalink.youtube.YoutubeAudioSourceManager: INFO
+    dev.lavalink.youtube.http.YoutubeOauth2Handler: INFO
+    com.github.topi314.lavasrc: INFO
+    com.github.topi314.lavasearch: INFO
+    com.github.topi314.lavalyrics: INFO
+    com.github.topi314.sponsorblock: INFO
+    io.github.lavalinkaddons: INFO
+    dev.lavalink.failover: INFO
+    me.devoxin: INFO
+  request:
+    enabled: true
+    includeClientInfo: true
+    includeHeaders: false
+    includeQueryString: true
+    includePayload: false
+    maxPayloadLength: 10000
+    beforeRequest: false
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 14
+
+
