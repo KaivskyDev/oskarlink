@@ -1,20 +1,20 @@
-﻿{
+{
     "_comment":  "Custom Pterodactyl egg for OskarLink. Generated from upload-to-github/OskarLink.",
     "meta":  {
                  "version":  "PTDL_v2",
                  "update_url":  null
              },
-    "exported_at":  "2026-07-01T19:25:05+02:00",
+    "exported_at":  "2026-07-01T19:37:37+02:00",
     "name":  "OskarLink",
-    "author":  "Oskar Trzaskawka",
+    "author":  "oskar.trzaskawka@oskarlink.dev",
     "description":  "OskarLink is a private Lavalink-compatible audio node distribution by Oskar Trzaskawka with a pinned, conflict-aware plugin stack and broad yt-dlp source coverage.",
     "features":  [
 
                  ],
     "docker_images":  {
-                          "ghcr.io/parkervcp/yolks:java_21":  "ghcr.io/parkervcp/yolks:java_21",
-                          "ghcr.io/parkervcp/yolks:java_17":  "ghcr.io/parkervcp/yolks:java_17",
-                          "ghcr.io/parkervcp/yolks:java_25":  "ghcr.io/parkervcp/yolks:java_25"
+                          "Java 21":  "ghcr.io/parkervcp/yolks:java_21",
+                          "Java 17":  "ghcr.io/parkervcp/yolks:java_17",
+                          "Java 25":  "ghcr.io/parkervcp/yolks:java_25"
                       },
     "file_denylist":  [
 
@@ -24,7 +24,7 @@
                    "files":  "{\n  \"application.yml\": {\n    \"parser\": \"yml\"\n  }\n}",
                    "startup":  "{\n  \"done\": \"Lavalink is ready to accept connections.\"\n}",
                    "logs":  "{\n  \"location\": \"logs/\"\n}",
-                   "stop":  "^^C"
+                   "stop":  "^C"
                },
     "scripts":  {
                     "installation":  {

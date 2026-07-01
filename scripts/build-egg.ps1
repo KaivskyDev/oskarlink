@@ -235,13 +235,13 @@ $egg = [ordered]@{
   }
   exported_at = (Get-Date -Format "yyyy-MM-ddTHH:mm:sszzz")
   name = "OskarLink"
-  author = "Oskar Trzaskawka"
+  author = "oskar.trzaskawka@oskarlink.dev"
   description = "OskarLink is a private Lavalink-compatible audio node distribution by Oskar Trzaskawka with a pinned, conflict-aware plugin stack and broad yt-dlp source coverage."
   features = @()
   docker_images = [ordered]@{
-    "ghcr.io/parkervcp/yolks:java_21" = "ghcr.io/parkervcp/yolks:java_21"
-    "ghcr.io/parkervcp/yolks:java_17" = "ghcr.io/parkervcp/yolks:java_17"
-    "ghcr.io/parkervcp/yolks:java_25" = "ghcr.io/parkervcp/yolks:java_25"
+    "Java 21" = "ghcr.io/parkervcp/yolks:java_21"
+    "Java 17" = "ghcr.io/parkervcp/yolks:java_17"
+    "Java 25" = "ghcr.io/parkervcp/yolks:java_25"
   }
   file_denylist = @()
   startup = "bash ./start-oskarlink.sh --server.port={{SERVER_PORT}} --lavalink.server.password={{LAVALINK_PASSWORD}}"
@@ -249,7 +249,7 @@ $egg = [ordered]@{
     files = "{`n  `"application.yml`": {`n    `"parser`": `"yml`"`n  }`n}"
     startup = "{`n  `"done`": `"Lavalink is ready to accept connections.`"`n}"
     logs = "{`n  `"location`": `"logs/`"`n}"
-    stop = "^^C"
+    stop = "^C"
   }
   scripts = [ordered]@{
     installation = [ordered]@{
@@ -262,6 +262,7 @@ $egg = [ordered]@{
 }
 
 $json = $egg | ConvertTo-Json -Depth 20
-Set-Content -Path $outPath -Value $json -Encoding UTF8
+$utf8NoBom = New-Object System.Text.UTF8Encoding -ArgumentList $false
+[System.IO.File]::WriteAllText($outPath, $json + [Environment]::NewLine, $utf8NoBom)
 Copy-Item -Path $outPath -Destination (Join-Path (Split-Path -Parent $root) "..\egg-oskarlink.json") -Force
 "Wrote $outPath"
